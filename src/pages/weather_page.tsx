@@ -37,6 +37,7 @@ const WeatherPage: FC = () => {
   useEffect(() => {
     const getRegion = async () => {
       try {
+        console.log(process.env.NEXT_PUBLIC_KAKAO_REST_API_KEY);
         const response = axios
           .get(
             `https://dapi.kakao.com//v2/local/geo/coord2regioncode.json?x=${currentLongitude}&y=${currentLatitude}`,
