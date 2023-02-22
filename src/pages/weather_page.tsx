@@ -35,20 +35,6 @@ const WeatherPage: FC = () => {
   const currentLongitude = useRecoilValue(currentLocationLongitude);
 
   useEffect(() => {
-    axios
-      .get(
-        `${API_BASE_URL}/api/mid?state=%EA%B2%BD%EA%B8%B0%EB%8F%84&latitude=${currentLatitude}&longitude=${currentLongitude}`
-      )
-      .then((response) => {
-        setWeatherData(response.data);
-      });
-    axios
-      .get(
-        `${API_BASE_URL}/api/short?city=%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C&state=%EC%86%A1%ED%8C%8C%EA%B5%AC`
-      )
-      .then((response) => {
-        setWeatherTimeData(response.data);
-      });
     const getRegion = async () => {
       try {
         const response = axios
@@ -62,13 +48,35 @@ const WeatherPage: FC = () => {
             const addressData = res.data.documents[0];
             setCity(addressData["region_1depth_name"]);
             setState(addressData["region_2depth_name"]);
+            return addressData;
+          })
+          .then((data) => {
+            // const cityEncoded = encodeURI(data["region_1depth_name"]);
+            const cityEncoded = encodeURI("서울특별시");
+            const seoulEncoded = encodeURI("서울");
+            const stateEncoded = encodeURI(data["region_2depth_name"]);
+            // console.log(data["region_2depth_name"]);
+            // console.log(cityEncoded);
+            axios
+              .get(
+                `${API_BASE_URL}/api/mid?state=${cityEncoded}&latitude=${currentLatitude}&longitude=${currentLongitude}`
+              )
+              .then((response) => {
+                setWeatherData(response.data);
+                // console.log(response.data);
+              });
+            axios
+              .get(`${API_BASE_URL}/api/short?city=${cityEncoded}&state=${stateEncoded}`)
+              .then((response) => {
+                setWeatherTimeData(response.data);
+              });
           });
       } catch (err) {
         console.log(err);
       }
     };
     getRegion();
-  }, [currentLatitude, currentLongitude, setCity, setState]);
+  }, [currentLatitude, currentLongitude, setCity, setState, city, state]);
 
   return (
     <div className="text-slate-900">
